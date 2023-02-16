@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:shopping_cart/utils/extensions.dart';
 import 'package:shopping_cart/utils/statics.dart';
 
 import '../../utils/error.dart';
@@ -13,6 +14,7 @@ class ProductsRepository extends ChangeNotifier {
   final ApiService _service = ApiService.instance;
 
   final _controller = StreamController<List<Product>>();
+  List<Product> _products = const [];
   Stream<List<Product>> get products => _controller.stream;
 
   ProductsRepository() {
@@ -28,13 +30,26 @@ class ProductsRepository extends ChangeNotifier {
   }
 
   Future<void> _loadFromLocal() async {
-    List<Product> products = [];
     final String? value = box.get(_key);
     if (value != null) {
-      products = (jsonDecode(value) as List<dynamic>)
+      _products = (jsonDecode(value) as List<dynamic>)
           .map((json) => Product.fromJson(json))
           .toList();
     }
-    _controller.sink.add(products);
+    _controller.sink.add(_products);
+  }
+
+  void search(String text) {
+    if (text.isEmpty) {
+      _controller.sink.add(_products);
+    } else {
+      _controller.sink.add(
+        _products.where((product) {
+          return product.title.containsIgnoreCase(text) ||
+              product.category.containsIgnoreCase(text) ||
+              product.description.containsIgnoreCase(text);
+        }).toList(),
+      );
+    }
   }
 }
