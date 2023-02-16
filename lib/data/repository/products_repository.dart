@@ -16,10 +16,10 @@ class ProductsRepository extends ChangeNotifier {
 
   ProductsRepository() {
     _loadFromLocal();
-    _loadFromRemote();
+    loadFromRemote();
   }
 
-  Future<void> _loadFromRemote() async {
+  Future<void> loadFromRemote() async {
     await _service.client?.getProducts().then((value) {
       box.put(_key, jsonEncode(value));
       _loadFromLocal();
