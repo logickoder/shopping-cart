@@ -1,5 +1,7 @@
+import 'dart:async';
+
 import 'statics.dart';
 
-Future<void> catchError(dynamic error) async {
+FutureOr<Null> catchError(dynamic error) async {
   logger.e(error.toString(), error);
 }

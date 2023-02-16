@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -11,8 +12,8 @@ class ProductsRepository extends ChangeNotifier {
   static const _key = 'products';
   final ApiService _service = ApiService.instance;
 
-  List<Product> _products = [];
-  List<Product> get products => _products;
+  final _controller = StreamController<List<Product>>();
+  Stream<List<Product>> get products => _controller.stream;
 
   ProductsRepository() {
     _loadFromLocal();
@@ -27,12 +28,13 @@ class ProductsRepository extends ChangeNotifier {
   }
 
   Future<void> _loadFromLocal() async {
+    List<Product> products = [];
     final String? value = box.get(_key);
     if (value != null) {
-      _products = (jsonDecode(value) as List<dynamic>)
+      products = (jsonDecode(value) as List<dynamic>)
           .map((json) => Product.fromJson(json))
           .toList();
     }
-    notifyListeners();
+    _controller.sink.add(products);
   }
 }
