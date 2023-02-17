@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
-import 'package:shopping_cart/data/repository/products_repository.dart';
-import 'package:shopping_cart/presentation/products/products_screen.dart';
 
 import 'data/repository/cart_repository.dart';
+import 'data/repository/products_repository.dart';
 import 'presentation/routes.dart';
 import 'utils/statics.dart';
 
@@ -28,6 +27,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CartRepository()),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorScheme: const ColorScheme.light(primary: Colors.blue),
         ),

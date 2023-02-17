@@ -1,12 +1,14 @@
 import 'package:easy_search_bar/easy_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shopping_cart/presentation/products/product_item.dart';
+import 'package:shopping_cart/presentation/cart/cart_item.dart';
+import 'package:shopping_cart/presentation/widgets/product_item.dart';
 import 'package:shopping_cart/utils/dimens.dart';
 
 import '../../data/models.dart';
 import '../../data/repository/cart_repository.dart';
 import '../../data/repository/products_repository.dart';
+import '../routes.dart';
 import 'products_sorting.dart';
 
 class ProductsScreen extends StatelessWidget {
@@ -15,7 +17,8 @@ class ProductsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final repository = context.watch<ProductsRepository>();
-    final cart = context.watch<CartRepository>();
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: EasySearchBar(
         title: const Text('Products'),
@@ -24,9 +27,13 @@ class ProductsScreen extends StatelessWidget {
         actions: [
           Badge(
             alignment: const AlignmentDirectional(sPadding, 0),
-            label: Text(cart.count.toString()),
+            label: Consumer<CartRepository>(
+              builder: (_, cart, __) => Text(
+                cart.count.toString(),
+              ),
+            ),
             child: IconButton(
-              onPressed: () => _showBottomSheet(context, repository),
+              onPressed: () => Navigator.pushNamed(context, Routes.cart),
               icon: const Icon(
                 Icons.shopping_cart_outlined,
               ),
@@ -45,7 +52,6 @@ class ProductsScreen extends StatelessWidget {
           stream: repository.products,
           initialData: const [],
           builder: (_, snapshot) {
-            final List<Product> products = snapshot.data!;
             return RefreshIndicator(
               onRefresh: repository.loadFromRemote,
               child: GridView.builder(
@@ -59,11 +65,37 @@ class ProductsScreen extends StatelessWidget {
                   crossAxisSpacing: sPadding / 2,
                   childAspectRatio: 1 / 1.5,
                 ),
-                itemBuilder: (_, index) => ProductItem(
-                  products[index],
-                  key: ValueKey(products[index].id),
-                ),
-                itemCount: products.length,
+                itemBuilder: (_, index) {
+                  final product = snapshot.data![index];
+                  return ProductItem(
+                    product: product,
+                    key: ValueKey(product.id),
+                    control: SizedBox(
+                      width: double.infinity,
+                      child: Consumer<CartRepository>(
+                        builder: (_, cart, __) {
+                          final inCart = cart.contains(product.id);
+                          final title =
+                              inCart ? 'Remove from Cart' : 'Add to Cart';
+                          return ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: inCart
+                                  ? theme.colorScheme.onSurfaceVariant
+                                  : null,
+                            ),
+                            onPressed: () => inCart
+                                ? cart.remove(product.id)
+                                : cart.add(snapshot.data!, product.id),
+                            child: FittedBox(
+                              child: Text(title),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  );
+                },
+                itemCount: snapshot.data!.length,
               ),
             );
           },

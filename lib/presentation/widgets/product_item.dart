@@ -8,9 +8,11 @@ import '../../utils/dimens.dart';
 import '../../utils/formatters.dart';
 
 class ProductItem extends StatelessWidget {
-  final Product _product;
+  final Product product;
+  final Widget control;
 
-  const ProductItem(this._product, {Key? key}) : super(key: key);
+  const ProductItem({Key? key, required this.product, required this.control})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +36,7 @@ class ProductItem extends StatelessWidget {
                     topRight: Radius.circular(sRadius),
                   ),
                   child: CachedNetworkImage(
-                    imageUrl: _product.image,
+                    imageUrl: product.image,
                     height: 100,
                     fit: BoxFit.contain,
                   ),
@@ -44,7 +46,7 @@ class ProductItem extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: Text(
-                  _product.title,
+                  product.title,
                   style: theme.textTheme.bodyLarge,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -53,7 +55,7 @@ class ProductItem extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: Text(
-                  format(_product.price),
+                  format(product.price),
                   style: theme.textTheme.bodySmall,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -62,32 +64,14 @@ class ProductItem extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: Text(
-                  "Rating: ${_product.rating.rate}",
+                  "Rating: ${product.rating.rate}",
                   style: theme.textTheme.bodySmall,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
               const SizedBox(height: sPadding / 2),
-              SizedBox(
-                width: double.infinity,
-                child: Consumer<CartRepository>(
-                  builder: (_, repository, __) {
-                    final inCart = repository.contains(_product);
-                    final title = inCart ? 'Remove from Cart' : 'Add to Cart';
-                    return ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            inCart ? theme.colorScheme.onSurfaceVariant : null,
-                      ),
-                      onPressed: () => repository.add(_product, inCart),
-                      child: FittedBox(
-                        child: Text(title),
-                      ),
-                    );
-                  },
-                ),
-              ),
+              control,
             ],
           ),
         ),
