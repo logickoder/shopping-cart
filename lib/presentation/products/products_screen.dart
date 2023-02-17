@@ -6,6 +6,7 @@ import 'package:shopping_cart/utils/dimens.dart';
 
 import '../../data/models.dart';
 import '../../data/repository/products_repository.dart';
+import 'products_sorting.dart';
 
 class ProductsScreen extends StatelessWidget {
   const ProductsScreen({super.key});
@@ -20,9 +21,9 @@ class ProductsScreen extends StatelessWidget {
         onSearch: repository.search,
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () => _showBottomSheet(context, repository),
             icon: const Icon(
-              Icons.filter_alt_outlined,
+              Icons.sort_by_alpha_outlined,
             ),
           ),
         ],
@@ -58,4 +59,17 @@ class ProductsScreen extends StatelessWidget {
       ),
     );
   }
+
+  _showBottomSheet(BuildContext context, ProductsRepository repository) =>
+      showModalBottomSheet(
+        context: context,
+        builder: (ctx) {
+          return ProductsSorting(
+            onItemClick: (sort, ascending) {
+              repository.sort(sort, ascending);
+              Navigator.pop(ctx);
+            },
+          );
+        },
+      );
 }

@@ -55,7 +55,16 @@ class ProductItem extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-              )
+              ),
+              SizedBox(
+                width: double.infinity,
+                child: Text(
+                  "Rating: ${_product.rating.rate}",
+                  style: theme.textTheme.bodySmall,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ],
           ),
         ),

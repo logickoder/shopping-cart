@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:shopping_cart/utils/extensions.dart';
 import 'package:shopping_cart/utils/statics.dart';
@@ -8,6 +9,8 @@ import 'package:shopping_cart/utils/statics.dart';
 import '../../utils/error.dart';
 import '../models.dart';
 import '../remote/api_client.dart';
+
+enum ProductSort { price, rating }
 
 class ProductsRepository extends ChangeNotifier {
   static const _key = 'products';
@@ -51,5 +54,23 @@ class ProductsRepository extends ChangeNotifier {
         }).toList(),
       );
     }
+  }
+
+  void sort(ProductSort? sort, bool ascending) {
+    var list = _products;
+    if (sort != null) {
+      list = _products.sorted((first, second) {
+        switch (sort) {
+          case ProductSort.price:
+            return first.price.compareTo(second.price);
+          case ProductSort.rating:
+            return first.rating.rate.compareTo(second.rating.rate);
+        }
+      }).toList();
+      if (!ascending) {
+        list = list.reversed.toList();
+      }
+    }
+    _controller.sink.add(list);
   }
 }
