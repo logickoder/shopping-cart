@@ -1,6 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../data/models.dart';
+import '../../data/repository/cart_repository.dart';
 import '../../utils/dimens.dart';
 import '../../utils/formatters.dart';
 
@@ -30,8 +33,8 @@ class ProductItem extends StatelessWidget {
                     topLeft: Radius.circular(sRadius),
                     topRight: Radius.circular(sRadius),
                   ),
-                  child: Image.network(
-                    _product.image,
+                  child: CachedNetworkImage(
+                    imageUrl: _product.image,
                     height: 100,
                     fit: BoxFit.contain,
                   ),
@@ -63,6 +66,26 @@ class ProductItem extends StatelessWidget {
                   style: theme.textTheme.bodySmall,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(height: sPadding / 2),
+              SizedBox(
+                width: double.infinity,
+                child: Consumer<CartRepository>(
+                  builder: (_, repository, __) {
+                    final inCart = repository.contains(_product);
+                    final title = inCart ? 'Remove from Cart' : 'Add to Cart';
+                    return ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            inCart ? theme.colorScheme.onSurfaceVariant : null,
+                      ),
+                      onPressed: () => repository.add(_product, inCart),
+                      child: FittedBox(
+                        child: Text(title),
+                      ),
+                    );
+                  },
                 ),
               ),
             ],

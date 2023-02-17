@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:shopping_cart/data/repository/products_repository.dart';
 import 'package:shopping_cart/presentation/products/products_screen.dart';
 
+import 'data/repository/cart_repository.dart';
+import 'presentation/routes.dart';
 import 'utils/statics.dart';
 
 void main() async {
@@ -23,12 +25,13 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ProductsRepository()),
+        ChangeNotifierProvider(create: (_) => CartRepository()),
       ],
       child: MaterialApp(
         theme: ThemeData(
           colorScheme: const ColorScheme.light(primary: Colors.blue),
         ),
-        home: const ProductsScreen(),
+        routes: Routes.routes,
       ),
     );
   }

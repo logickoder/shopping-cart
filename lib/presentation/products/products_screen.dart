@@ -5,6 +5,7 @@ import 'package:shopping_cart/presentation/products/product_item.dart';
 import 'package:shopping_cart/utils/dimens.dart';
 
 import '../../data/models.dart';
+import '../../data/repository/cart_repository.dart';
 import '../../data/repository/products_repository.dart';
 import 'products_sorting.dart';
 
@@ -14,12 +15,23 @@ class ProductsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final repository = context.watch<ProductsRepository>();
+    final cart = context.watch<CartRepository>();
     return Scaffold(
       appBar: EasySearchBar(
         title: const Text('Products'),
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
         onSearch: repository.search,
         actions: [
+          Badge(
+            alignment: const AlignmentDirectional(sPadding, 0),
+            label: Text(cart.count.toString()),
+            child: IconButton(
+              onPressed: () => _showBottomSheet(context, repository),
+              icon: const Icon(
+                Icons.shopping_cart_outlined,
+              ),
+            ),
+          ),
           IconButton(
             onPressed: () => _showBottomSheet(context, repository),
             icon: const Icon(

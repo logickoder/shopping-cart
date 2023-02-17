@@ -16,8 +16,8 @@ abstract class ApiClient {
 class ApiService {
   final _dio = Dio()
     ..options = BaseOptions(
-      connectTimeout: const Duration(seconds: 5),
-      receiveTimeout: const Duration(seconds: 5),
+      connectTimeout: const Duration(seconds: 60),
+      receiveTimeout: const Duration(seconds: 60),
       followRedirects: false,
       validateStatus: (status) => (status ?? 0) <= 500,
       responseType: ResponseType.json,
